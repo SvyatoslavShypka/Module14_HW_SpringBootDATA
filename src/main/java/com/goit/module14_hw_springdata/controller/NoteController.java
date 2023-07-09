@@ -1,5 +1,6 @@
 package com.goit.module14_hw_springdata.controller;
 
+import com.goit.module14_hw_springdata.dto.NoteDto;
 import com.goit.module14_hw_springdata.entity.Note;
 import com.goit.module14_hw_springdata.service.NoteService;
 import org.springframework.stereotype.Controller;
@@ -11,7 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class NoteController {
 
-    NoteService noteService = new NoteService();
+    private final NoteService noteService;
+
+    public NoteController(NoteService noteService) {
+        this.noteService = noteService;
+    }
 
     @GetMapping("/edit")
     public String showAddNoteForm(Note note) {
@@ -29,13 +34,13 @@ public class NoteController {
 
     @GetMapping("/list")
     public String showAllNotes(Model model) {
-        model.addAttribute("notes", noteService.listAll());
+        model.addAttribute("notes",noteService.listAll());
         return "index";
     }
 
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
-        Note note = noteService.getById(id);
+        NoteDto note = noteService.getById(id);
 
         model.addAttribute("note", note);
         return "update-note";

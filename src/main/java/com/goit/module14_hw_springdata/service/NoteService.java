@@ -1,87 +1,73 @@
 package com.goit.module14_hw_springdata.service;
 
+import com.goit.module14_hw_springdata.dto.NoteDto;
 import com.goit.module14_hw_springdata.entity.Note;
-import com.goit.module14_hw_springdata.exception.RecordNotFoundException;
+import com.goit.module14_hw_springdata.mapper.NoteMapper;
+import com.goit.module14_hw_springdata.repository.NoteRepository;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class NoteService {
 
-    private Map<Long, Note> map = new HashMap<>();
+    private final NoteRepository noteRepository;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final NoteMapper noteMapper;
 
-    public NoteService() {
+    public NoteService(NoteRepository noteRepository, NamedParameterJdbcTemplate jdbcTemplate, NoteMapper noteMapper) {
+        this.noteRepository = noteRepository;
+        this.jdbcTemplate = jdbcTemplate;
+        this.noteMapper = noteMapper;
     }
 
-    public List<Note> listAll() {
-        List<Note> result = new ArrayList<>();
-        for (Map.Entry<Long, Note> entry : map.entrySet()) {
-            result.add(entry.getValue());
-        }
-        return result;
+    public List<NoteDto> listAll() {
+        List<Note> result = noteRepository.findAll();
+        return noteMapper.mapEntityToDto(result);
     }
 
-    public Note add(Note note) {
+    public NoteDto add(Note note) {
         Random random = new Random();
         note.setId(random.nextLong(1000000));
-        map.put(note.getId(), note);
-        return note;
+        noteRepository.save(note);
+        return noteMapper.mapEntityToDto(note);
     }
 
     public void deleteById(long id) {
-        if (map.remove(id) == null) {
-            throw new RecordNotFoundException("Note was not found");
-        }
+        noteRepository.deleteById(id);
     }
 
     public void update(Note note) {
-        Note getNote = getById(note.getId());
-        getNote.setTitle(note.getTitle());
-        getNote.setContent(note.getContent());
+        noteRepository.save(note);
     }
 
-    public Note getById(long id) {
-        Note result;
-        result = map.get(id);
-        if (result == null) {
-            throw new RecordNotFoundException("Note was not found");
-        }
-        return result;
+    public NoteDto getById(long id) {
+        String query = "SELECT n.id, n.title, n.content FROM notes n WHERE id=:id";
+        return jdbcTemplate.queryForObject(
+                query,
+                Map.of("id", id),
+                (resultSet, index) -> {
+                    return NoteDto.of(
+                            resultSet.getLong("id"),
+                            resultSet.getString("title"),
+                            resultSet.getString("content")
+                    );
+                }
+        );
     }
 
-    public Map<Long, Note> getMap() {
-        return this.map;
+    @PostConstruct
+    public void construct() {
+//        log.info("CustomerService construct");
     }
 
-    public void setMap(Map<Long, Note> map) {
-        this.map = map;
-    }
-
-    public boolean equals(final Object o) {
-        if (o == this) return true;
-        if (!(o instanceof NoteService)) return false;
-        final NoteService other = (NoteService) o;
-        if (!other.canEqual((Object) this)) return false;
-        final Object this$map = this.getMap();
-        final Object other$map = other.getMap();
-        if (this$map == null ? other$map != null : !this$map.equals(other$map)) return false;
-        return true;
-    }
-
-    protected boolean canEqual(final Object other) {
-        return other instanceof NoteService;
-    }
-
-    public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        final Object $map = this.getMap();
-        result = result * PRIME + ($map == null ? 43 : $map.hashCode());
-        return result;
-    }
-
-    public String toString() {
-        return "NoteService(map=" + this.getMap() + ")";
+    @PreDestroy
+    public void destroy() {
+//        log.info("CustomerService destroy");
     }
 }

@@ -1,12 +1,25 @@
 package com.goit.module14_hw_springdata.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.springframework.stereotype.Component;
 
+
+@Entity
 @Component
+@Table(name = "notes")
 public class Note {
 
+    @Id
+    @Column(name = "id")
     Long id;
+
+    @Column(name = "title")
     String title;
+
+    @Column(name = "content")
     String content;
 
     public Note() {
