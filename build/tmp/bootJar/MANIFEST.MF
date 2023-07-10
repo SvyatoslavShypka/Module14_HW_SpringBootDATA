@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Main-Class: org.springframework.boot.loader.JarLauncher
+Start-Class: com.goit.module14_hw_springdata.Module14HwSpringBootDataApp
+ lication
+Spring-Boot-Version: 3.1.1
+Spring-Boot-Classes: BOOT-INF/classes/
+Spring-Boot-Lib: BOOT-INF/lib/
+Spring-Boot-Classpath-Index: BOOT-INF/classpath.idx
+Spring-Boot-Layers-Index: BOOT-INF/layers.idx
+Build-Jdk-Spec: 17
+Implementation-Title: Module14_HW_SpringData
+Implementation-Version: 0.0.1-SNAPSHOT
+

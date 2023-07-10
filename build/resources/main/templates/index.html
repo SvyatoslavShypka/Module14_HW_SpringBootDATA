@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TODO notes</title>
+</head>
+<body>
+<div th:switch="${notes.size()}">
+    <h2 th:case=0>No notes yet!</h2>
+    <div th:case="*">
+        <h2>TODO Notes</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="note : ${notes}">
+                <td th:text="${note.title}"></td>
+                <td th:text="${note.content}"></td>
+                <td><a th:href="@{/note/edit/{id}(id=${note.id})}">Edit</a></td>
+                <td><a th:href="@{/note/delete/{id}(id=${note.id})}">Delete</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p><a href="/note/edit">Add a new note</a></p>
+</div>
+
+</body>
+</html>

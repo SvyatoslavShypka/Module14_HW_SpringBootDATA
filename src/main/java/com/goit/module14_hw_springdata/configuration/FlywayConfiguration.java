@@ -40,6 +40,7 @@ public class FlywayConfiguration {
                     .loggers(environment.getProperty(Constants.FLYWAY_LOGGER))
                     .placeholderReplacement(false)
                     .failOnMissingLocations(true)
+                    .baselineOnMigrate(true)
                     .load();
 //            log.info("Repair:{}", isRepair);
             if (isRepair) {
